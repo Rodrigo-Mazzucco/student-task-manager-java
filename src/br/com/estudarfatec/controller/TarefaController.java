@@ -5,25 +5,24 @@ import java.util.List;
 
 import br.com.estudarfatec.model.Disciplina;
 import br.com.estudarfatec.model.Tarefa;
-import br.com.estudarfatec.repository.TarefaRepository;
+import br.com.estudarfatec.service.TarefaService;
 
 public class TarefaController {
-	
-	private TarefaRepository repositoryTarefa;
-	
+
+	private TarefaService serviceTarefa;
+
 	// Injeção de dependência
-	public TarefaController(TarefaRepository repositoryTarefa) {
-		this.repositoryTarefa =  repositoryTarefa;
+	public TarefaController(TarefaService serviceTarefa) {
+		this.serviceTarefa = serviceTarefa;
 	}
-	
+
 	public void cadastrar(String titulo, String descricao, LocalDate dataEntrega, Disciplina disciplina) {
-		Tarefa tarefa = new Tarefa(titulo, descricao, dataEntrega, disciplina);
-		
-		repositoryTarefa.salvar(tarefa); // Delega ao repository
+
+		serviceTarefa.cadastrar(titulo, descricao, dataEntrega, disciplina); // Delega ao service
 	}
-	
-	public List<Tarefa> listar(){
-		return repositoryTarefa.listar(); // Delega
+
+	public List<Tarefa> listar() {
+		return serviceTarefa.listar(); // Delega
 	}
 
 }

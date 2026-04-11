@@ -15,6 +15,8 @@ import br.com.estudarfatec.repository.TarefaRepository;
 
 import br.com.estudarfatec.repository.DisciplinaRepositoryMemoria;
 import br.com.estudarfatec.repository.TarefaRepositoryMemoria;
+import br.com.estudarfatec.service.DisciplinaService;
+import br.com.estudarfatec.service.TarefaService;
 
 public class Main {
 
@@ -24,9 +26,13 @@ public class Main {
     	TarefaRepository repositoryTarefa = new TarefaRepositoryMemoria();
     	DisciplinaRepository repositoryDisciplina = new DisciplinaRepositoryMemoria();
     	
+    	// Services (regras de negócio) — recebem os repositórios
+    	TarefaService serviceTarefa = new TarefaService(repositoryTarefa);
+    	DisciplinaService serviceDisciplina = new DisciplinaService(repositoryDisciplina);
+    	
     	// Injeta no controller
-    	TarefaController controllerTarefa = new TarefaController(repositoryTarefa);
-    	DisciplinaController controllerDisciplina = new DisciplinaController(repositoryDisciplina);
+    	TarefaController controllerTarefa = new TarefaController(serviceTarefa);
+    	DisciplinaController controllerDisciplina = new DisciplinaController(serviceDisciplina);
     	
     	List<Disciplina> disciplinas = controllerDisciplina.listar();
     	List<Tarefa> tarefas = controllerTarefa.listar();
@@ -58,10 +64,14 @@ public class Main {
                 case 1: // Cadastrar disciplina
                     System.out.print("Digite o nome da disciplina: ");
                     String nomeDisciplina = scanner.nextLine();
-                    controllerDisciplina.cadastrar(nomeDisciplina);
-                    System.out.println("Disciplina cadastrada!");
+                    try {
+                        controllerDisciplina.cadastrar(nomeDisciplina);
+                        System.out.println("Disciplina cadastrada!");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Erro: " + e.getMessage()); // ex: "Já existe uma disciplina com esse nome."
+                    }
                     break;
-
+                    
                 case 2: // Cadastrar tarefa
                     if (disciplinas.isEmpty()) {
                         System.out.println("Cadastre uma disciplina antes!");
@@ -100,8 +110,12 @@ public class Main {
                     Disciplina disciplinaEscolhida = disciplinas.get(indiceDisciplina);
 
                    
-                   controllerTarefa.cadastrar(titulo,descricao,dataEntrega, disciplinaEscolhida);
-                    System.out.println("Tarefa cadastrada!");
+                    try {
+                        controllerTarefa.cadastrar(titulo, descricao, dataEntrega, disciplinaEscolhida);
+                        System.out.println("Tarefa cadastrada!");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    }
                     break;
 
                 case 3: // Listar tarefas por disciplina
